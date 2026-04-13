@@ -15,8 +15,16 @@ jobs:
         with:
           node-version: 18
 
+      - name: Cache playwright browsers
+        uses: actions/cache@v3
+        id: playwright-cache
+        with:
+          path: ~/.cache/ms-playwright
+          key: playwright-${{ hashFiles('package-lock.json') }}
+
       - run: npm install
 
       - run: npx playwright install chromium --with-deps
+        if: steps.playwright-cache.outputs.cache-hit != 'true'
 
       - run: npx playwright test --project=chromium
